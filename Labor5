@@ -1,0 +1,169 @@
+#LAB5
+
+#A1
+
+# Importarea bibliotecilor necesare
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+import numpy.lib.histograms
+
+# Parametrii distribuției normale
+mu = 199
+sigma = 3
+N = 1000
+
+# Generarea de N valori aleatoare folosind distribuția normală
+Daten = norm.rvs(mu, sigma, N)
+print(Daten)
+
+# Calculul și afișarea mediei datelor
+m = numpy.mean(Daten)
+print("Abgefüllte Menge Tee - im Mittel:", m)
+
+# Calculul și afișarea probabilităților și a frecvențelor relative
+
+# p1: Probabilitatea ca X să fie mai mic sau egal cu 195
+print("p1 Daten <= 195", numpy.mean(Daten <= 195))
+
+# w1: Probabilitatea teoretică P(X <= 195) folosind funcția de distribuție cumulativă (CDF)
+print("w1 theor. Wahrscheinlichkeit P(X <= 195): ", norm.cdf(195, mu, sigma))
+
+# p2: Probabilitatea ca X să fie între 195 și 198
+print("p2 195 <= Daten <= 198", numpy.mean((Daten >= 195) & (Daten <= 198)))
+
+# w2: Probabilitatea teoretică P(195 <= X <= 198) folosind funcția de distribuție cumulativă (CDF)
+print("w2 theor. Wahrscheinlichkeit P(195 <= X <= 198): ", norm.cdf(198, mu, sigma) - norm.cdf(195, mu, sigma))
+
+# p3: Probabilitatea ca X să fie mai mare sau egal cu 195
+print("p3 Daten >= 195", numpy.mean(Daten >= 195))
+
+# w3: Probabilitatea teoretică P(1965 <= Daten) folosind complementul funcției de distribuție cumulativă (1 - CDF)
+print("w3 theor. Wahrscheinlichkeit P(1965 <= Daten): ", 1 - norm.cdf(195, mu, sigma))
+
+# Calculul histogramei și a intervalelor claselor
+Hfg, Klasse = numpy.histogram(Daten, bins=16)
+print("Hfg: ", len(Hfg))
+print("Klassengrenzen (Endpunkte der Intervalle):", Klasse)
+print("Len Klasse:", len(Klasse))
+
+# Afișarea frecvențelor absolute în fiecare clasă
+for i in range(len(Hfg)):
+    print(f"({i+1:2d}) Absolute Häufigkeit {Hfg[i]:3d} in der Klasse [{Klasse[i]:7.4f},{Klasse[i+1]:7.4f}")
+
+# Crearea unui histogramă pentru frecvențele relative ale valorilor generate și a densității de probabilitate teoretică
+plt.hist(Daten, bins=16, density=True, color="blue", edgecolor="black", label="rel. Häufigkeiten")
+x = numpy.linspace(min(Daten), max(Daten), 100)
+y = norm.pdf(x, mu, sigma)  # Valori ale Dichtefunktion f(x) a distribuției N(mu, sigma^2)
+plt.plot(x, y, 'r.')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+#A2
+#timpul T(in secunde) de care o imprimanta are nevoie pentru a tipari un afis urmeaza o distributie exponentiala(Exponentialverteilung)
+#Exp(a) cu parametrul a=1/12
+from matplotlib.pyplot import show, hist, grid, legend, xticks, plot
+from scipy.stats import expon
+import numpy
+from matplotlib import pyplot as plt
+
+# Parametru pentru distribuția exponențială
+alpha = 1/12
+N = 1000
+# Generarea unui set de N valori aleatoare folosind distribuția exponențială și calculul mediei
+data = expon.rvs(loc=0, scale=1/alpha, size=N)
+print("Die durchschnittliche Druckzeit:", numpy.mean(data))  # Afișarea mediei datelor
+
+
+# b
+# Crearea unui histogramă pentru frecvențele relative ale valorilor generate și a densității de probabilitate teoretice
+
+# Crearea histogramului pentru frecvențele relative ale datelor generate
+plt.hist(data, bins=12, density=True, color="blue", edgecolor="black", label="rel. Hfg.")
+
+# Generarea unui set de valori x pentru reprezentarea funcției de densitate de probabilitate teoretică
+x = numpy.linspace(min(data), max(data), 100)
+
+# Calculul valorilor y corespunzătoare funcției de densitate de probabilitate exponențiale
+y = expon.pdf(x, loc=0, scale=1/alpha)
+
+# Adăugarea graficului funcției de densitate de probabilitate teoretică la histogramă
+plt.plot(x, y, "r.", label="Dichtefkt. Exp(1/12)")
+
+# Adăugarea unei legende și a unei grile pentru claritate
+plt.legend()
+plt.grid()
+
+# Afișarea graficului rezultat
+plt.show()
+
+# c
+# Calculul și afișarea probabilităților și a frecvențelor relative
+
+# p1: Probabilitatea ca X să fie mai mică decât 20
+print("p1 ", numpy.mean(data < 20))
+# w1: Probabilitatea teoretică P(X < 20) folosind funcția de distribuție cumulativă (CDF)
+print("theor w1", expon.cdf(20, loc=0, scale=1/alpha))
+
+# p2: Probabilitatea ca X să fie mai mare decât 10
+print("p2 ", numpy.mean(data > 10))
+# w2: Probabilitatea teoretică P(X > 10) folosind complementul funcției de distribuție cumulativă (1 - CDF)
+print("theor w2", 1 - expon.cdf(10, loc=0, scale=1/alpha))
+
+# p3: Probabilitatea ca X să fie între 10 și 20
+print("p3 ", numpy.mean((data > 10) & (data < 20)))
+# w3: Probabilitatea teoretică P(10 < X < 20) folosind diferența dintre CDF-uri
+print("theor w3", expon.cdf(30, loc=0, scale=1/alpha) - expon.cdf(10, loc=0, scale=1/alpha))
+
+# d
+# Crearea unui histogramă pentru frecvențele absolute ale valorilor generate
+plt.hist(data, bins=12, density=False, edgecolor="black", label="absolute Hfg.")
+plt.legend()
+plt.grid()
+plt.show()
+
+# Calculul histogramei și a intervalelor claselor
+Hfg, Klasse = numpy.histogram(data, bins=12)
+for i in range(len(Hfg)):
+    print(f"({i+1:2d}) Absolute Häufigkeit {Hfg[i]:3d} in der Klasse [{Klasse[i]:7.4f},{Klasse[i+1]:7.4f}")
+
+# e
+# Crearea unui grafic pentru densitatea de probabilitate teoretică a distribuției exponențiale
+t = numpy.linspace(0, 10, 100)
+y = expon.pdf(t, loc=0, scale=1/alpha)
+plt.plot(t, y, "m-", label=f"Dichtefkt. Exp({alpha})")
+plt.legend()
+plt.grid()
+plt.show()
+
+# A3
+#De fiecare dată când profesorul X întâlnește un grup de 6 persoane, pariază cel puțin 6 euro două dintre aceste 6 persoane
+# au zile de naștere în aceeași lună. Pe baza simulărilor estimăm: câștigul sau pierderea medie pentru acest pariu
+# sau probabilitatea p, cu care Profesorul X câștigă un pariu
+from scipy.stats import randint
+import numpy
+
+# Definirea parametrilor
+a = 1
+b = 13  # 12 luni
+c = 0
+N = 1000
+G = []
+
+# Simularea jocului de alegere a șase luni pentru 1000 de persoane
+for _ in range(N):
+    R = randint.rvs(a, b, size=6)
+    S = set(R)
+    c = c + (len(S) < 6)  # Contorizarea cazurilor în care cel puțin două persoane au aceeași lună de naștere
+
+    # Calcularea câștigului sau pierderii pentru fiecare simulare
+    if len(S) < 6:
+        G.append(6)
+    else:
+        G.append(-6)
+
+# Afișarea rezultatelor
+print("Wkt mindestens 2 Personen von 6 haben in demselben Monat Geburtstag: ", c/N)
+print("Mittlerer Gewinn oder Verlust:", numpy.mean(G))
+print("Gewinn oder Verlust in 1000 Wetten:", sum(G))
