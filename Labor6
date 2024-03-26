@@ -1,0 +1,147 @@
+#LAB 6
+
+# A1
+
+# Vectorul D contine 800 de date, care sunt valorile lui ZG(variabila aleatoare)
+
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Setarea variabilelor
+X = [4, 5, 6, 7, 8, 9, 10]
+P = [0.05, 0.1, 0.35, 0.2, 0.1, 0.1, 0.1]  # Lista ponderilor ajustate pentru a se potrivi lungimii lui X
+N = 800
+
+# Simularea variabilei aleatoare discrete X
+D = random.choices(X, weights=P, k=N)
+
+# Calculul așteptării empirice E(X) prin simulare
+print("Anhand Simulationen Erwartungswert E(X):", np.mean(D))
+
+# Calculul așteptării teoretice E(X)
+s1 = sum(x * p for x, p in zip(X, P))
+print("theor. E(X):", s1)
+
+# Calculul varianței empirice V(X) prin simulare
+print("Anhand Simulationen Varianz V(X):", np.var(D))
+
+# Calculul varianței teoretice V(X)
+s2 = sum(x**2 * p for x, p in zip(X, P)) - s1**2
+print("theor. V(X):", s2)
+
+# Calculul probabilității P(X <= 7) prin simulare
+c7 = sum(x <= 7 for x in D)
+print("Anhand Simulationen P(X<=7):", c7 / N)
+
+# Calculul probabilității teoretice P(X <= 7)
+print("theor. Wkt. P(X<=7):", sum(np.array(P[:4])))
+
+# Calculul probabilității P(X > 4) prin simulare
+c4 = sum(x > 4 for x in D)
+print("Anhand Simulationen P(X>4):", c4 / N)
+
+# Calculul probabilității teoretice P(X > 4)
+print("theor. Wkt. P(X>4):", sum(np.array(P[1:])))
+
+# Calculul frecvențelor relative și reprezentarea grafică a acestora
+d, c = np.unique(D, return_counts=True)
+
+# Primul grafic cu bare
+plt.bar(d, c / N, width=0.9, color="red", edgecolor="black", label="relative Hfg.")
+plt.legend()
+plt.show()
+
+# Corectarea celui de-al doilea grafic cu bare
+plt.bar(d, c / N, width=0.6, color="green", edgecolor="black", label="relative Hfg.")
+plt.legend()
+plt.show()
+
+
+# A2
+
+# Simulati N = 1000 puncte aleatorii din cub
+# [-2,2] X [-2,2] X [-2,2] din R^3
+# X este variabila aleatoare care reprezinta distanta acestor puncte pana la punctul (2,2,2)
+
+import math
+import numpy as np
+from scipy.stats import uniform
+
+# a
+N = 1000
+
+# Generarea coordonatelor X, Y și Z ale punctelor în spațiul cubic
+x = uniform.rvs(loc=-2, scale=4, size=N)
+y = uniform.rvs(loc=-2, scale=4, size=N)
+z = uniform.rvs(loc=-2, scale=4, size=N)
+
+# Calculul distanței euclidiene de la fiecare punct la punctul [2, 2, 2]
+X = [math.dist([x[i], y[i], z[i]], [2, 2, 2]) for i in range(len(x))]
+
+# Calculul așteptării empirice E(X) prin simulare
+print("Anhand Simulationen Erwartungswert E(X):", np.mean(X))
+
+# b
+# Calculul distanței de la fiecare punct la origine ([0, 0, 0])
+Z = [math.dist([x[i], y[i], z[i]], [0, 0, 0]) for i in range(len(x))]
+R = 2  # Raza sferei
+L = 4  # Lungimea laturii cubului
+
+# Calculul numărului de puncte în interiorul sferei
+c = sum(z <= R for z in Z)
+print("Wkt. zufällige Punkt im Inneren der Kugel (aus Simulationen):", c / len(Z))
+
+# Calculul probabilității teoretice pentru un punct aflat în interiorul sferei
+theoretische_wkt = (4 / 3) * math.pi * (R * 3) / (L * 3)
+print("theor. Wkt. zufälliger Punkt im Inneren der Kugel:", theoretische_wkt)
+
+#A7
+
+# Intr-o urna sunt 3 bile albastre, 3 rosii si 4 albe
+# Se trag 3 bile
+# Jucatorul primeste 5 euro daca cele 3 bile au aceeasi culoare
+# Jucatorul primeste 2 euro daca cele 3 au culori diferite
+# In toate celelalte cazuri plateste 1 euro
+# Cat de mult castiga sau pierde jucatorul in medie?
+# Comparati rezultatul teoretic cu rezultatele simularilor
+
+import itertools
+import random
+from math import factorial
+
+# Setarea parametrilor
+b = 3  # număr de bile albe
+r = 3  # număr de bile roșii
+w = 4  # număr de bile albastre
+alle = b + r + w  # număr total de bile
+z = 3  # extragere fără repunere; 5 -> toate bilele au aceeași culoare; 2 -> toate bilele au culori diferite; -1 -> altfel
+Liste = ["b"] * b + ["r"] * r + ["w"] * w  # lista cu bilele disponibile
+print(Liste)
+
+t = 0
+N = 1000
+for _ in range(N):
+    R = random.sample(Liste, z)  # Extrage z bile fără repunere
+    if len(set(R)) == 1:  # Toate bilele au aceeași culoare
+        t = t + 5
+    elif len(set(R)) == 3:  # Toate bilele au culori diferite
+        t = t + 2
+    else:
+        t = t - 1
+
+print("Gewinn oder Verlust im Mittel:", t / N)  # Valoarea simulată așteptată pentru câștig sau pierdere
+
+# Calculul probabilităților teoretice pentru diferitele scenarii
+s = 0
+X = [5, 2, -1]  # Câștig sau pierdere în Euro
+p1 = (b / alle) * ((b - 1) / (alle - 1)) * ((b - 2) / (alle - 2)) + \
+     (r / alle) * ((r - 1) / (alle - 1)) * ((r - 2) / (alle - 2)) + \
+     (w / alle) * ((w - 1) / (alle - 1)) * ((w - 2) / (alle - 2))
+p2 = factorial(3) * (b / alle) * (r / (alle - 1)) * (w / (alle - 2))
+p3 = 1 - p1 - p2
+print(p1, p2, p3)
+P = [p1, p2, p3]  # Probabilitatea pentru X
+for i in range(len(X)):
+    s = s + X[i] * P[i]
+print("theoretischer Erwartungswert für Gewinn oder Verlust:", s)  # Așteptarea teoretică pentru câștig sau pierdere
